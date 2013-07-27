@@ -27,7 +27,7 @@
 \begin{abstract}
 \end{abstract}
 
-\keywords{}
+\keywords{Locking strategies}
 
 % INTRODUCTION
 \section{Introduction}
@@ -39,20 +39,17 @@ This paper is structured as follows, first the case that was used for this paper
 % CASE
 \section{Case description}
 \label{sec:case}
-The show case for this paper will be a small database for a bank consisting of $10.000$ account holders for $13.000$ accounts. All these accounts exchange money with other accounts (of potentially other account holders). This show case models the number of transactions an account makes via the normal distribution: some accounts hardly ever send money to other accounts, while some accounts have a really frequent exchange of money, but most of the accounts will exchange money about average. The receiving end of the transactions is modelled similarly using the normal distribution. The link between sender and receiver is randomly distributed.
+The show case for this paper will be a small database for a bank consisting of $10.000$ account holders for $13.000$ accounts. All these accounts exchange money with other accounts (of potentially other account holders). This show case models the number of transactions an account makes via the normal distribution: some accounts hardly ever send money to other accounts, while some accounts have a really frequent exchange of money, but most of the accounts will exchange money about average. The receiving end of the transactions is modeled similarly using the normal distribution. The link between sender and receiver is randomly distributed.
 
 % METHODOLOGY
 \section{Methodology}
 \label{sec:methodology}
 Transactions of a bank database will be simulated using a simple model of a bank database consisting of \emph{bank account} and \emph{account holder} tables in a PostgreSQL database. Multiple sets of financial transactions will be generated such that the sender and the receiver side of the transactions will hold a $\mathcal{N} (m,\sigma^2)$ distribution, varying on the \emph{m} parameter. Higher values of \emph{m} result in higher expected values of read-write conflicts, because of higher transaction-denseness. 
 
-The metric used in this paper will be that \emph{aborted transaction percentage}, which indicates the percentage of aborted transactions while using the optimistic locking strategy.
+The metric used in this paper will be that \emph{aborted transaction percentage}, which indicates the percentage of all transactions that are aborted while using the optimistic locking strategy.
 
-The generated financial transaction sets will be executed on the database once with an optimistic locking strategy and once with a pessimistic locking strategy, where each transaction will be randomly assigned to one of 20 threads. The hypothesis is the optimistic locking strategies to be more time-efficient for less transaction-dense sets, where pessimistic locking strategies are expected to be more time-efficient for transaction-dense sets. If this hypothesis is correct there will be a break-even point between optimistic and pessimistic locking strategy performance for some aborted transactions percentage. By measuring execution times of the transaction sets, varied on \emph{m}, one can identify this break-even point and thereby find a solution to the problem of finding the best performing locking strategy for a given level of transaction density. 
+The generated financial transaction sets will be executed on the database once with an optimistic locking strategy and once with a pessimistic locking strategy, where each transaction will be randomly assigned to one of 20 threads. The hypothesis is the optimistic locking strategies to be more time-efficient for less transaction-dense sets, where pessimistic locking strategies are expected to be more time-efficient for transaction-dense sets. If this hypothesis is correct there will be a break-even point between optimistic and pessimistic locking strategy performance for some aborted transactions percentage. By measuring execution times of the transaction sets, varied on \emph{m}, one can identify this break-even point and thereby find a solution to the problem of finding the best performing locking strategy for a given level of transaction density.
 
-\section{Dimensions}
-\section{Repeatability}
-\section{Why}
 \section{Results}
 \label{sec:results}
 
