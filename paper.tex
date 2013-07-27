@@ -44,8 +44,13 @@ The show case for this paper will be a small database for a bank consisting of $
 % METHODOLOGY
 \section{Methodology}
 \label{sec:methodology}
+Transactions of a bank database will be simulated using a simple model of a bank database consisting of \emph{bank account} and \emph{account holder} tables in a PostgreSQL database. Multiple sets of financial transactions will be generated such that the sender and the receiver side of the transactions will hold a $\mathcal{N} (m,\sigma^2)$ distribution, varying on the \emph{m} parameter. Higher values of \emph{m} result in higher expected values of read-write conflicts, because of higher transaction-denseness. 
 
-% RESULTS
+The generated financial transaction sets will be executed on the database once with an optimistic locking strategy and once with a pessimistic locking strategy, where each transaction will be randomly assigned to one of 20 threads. We hypothesize optimistic locking strategies to be more time-efficient for less transaction-dense sets, where pessimistic locking strategies are expected to be more time-efficient for transaction-dense sets. If this hypothesis is correct there will be a break even point between optimistic and pessimistic locking strategy performance for some value the mean in the normal distribution. By measuring execution times of the transaction sets, varied on \emph{m}, we can identify this break-even point and thereby find a solution to the problem of finding the best performing locking strategy for a given level of transaction density. 
+
+\section{Dimensions}
+\section{Repeatability}
+\section{Why}
 \section{Results}
 \label{sec:results}
 
