@@ -1,0 +1,25 @@
+Disk-based tables (D-tables) are by default optimistic.
+Main-memory tables (M-tables) are always pessimistic.
+
+The step of checking the version numbers is called validation. The validation can be performed at the commit time (normal validation) or at the time of writing each statement (early validation). In solidDB, early validation is the default method (General.TransactionEarlyValidate=yes).
+
+ALTER TABLE MyTable1 SET PESSIMISTIC;
+ALTER TABLE MyTable2 SET OPTIMISTIC;
+
+
+
+10006	Database	Error	
+Concurrency conflict, two transactions updated or deleted the same row.
+
+Two separate transactions have modified a same row in the database simultaneously. This has resulted in a concurrency conflict.
+
+The error is returned when the tables are set with optimistic concurrency control and two or more concurrent connections attempt to obtain a exclusive lock on the same row/or set of rows at the same time (same row in the database is being modified simultaneously).
+
+To diagnose the problem:
+Enable monitoring.
+Check soltrace.out for error 10006.
+Resolving the problem:
+
+The transaction that has been committed first is allowed to make the modifications to the database. The latter transactions is rolled back and this error message is returned to the application. To handle this update conflict, for example, the application could try to re-read the data and retry the update.
+
+You can also switch to pessimistic locking method where row-level locking is used to avoid update conflicts. The pessimistic locking mode is suggested for tables that are modified frequently. To turn the pessimistic locking on for a table, use the ALTER TABLE statement.
