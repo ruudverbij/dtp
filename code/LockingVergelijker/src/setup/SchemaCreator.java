@@ -1,6 +1,7 @@
+package setup;
+
 import java.sql.SQLException;
 import java.util.Properties;
-
 
 public class SchemaCreator {
     public static void main (String args[]) throws Exception
