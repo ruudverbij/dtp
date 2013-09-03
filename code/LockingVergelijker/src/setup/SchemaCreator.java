@@ -23,11 +23,11 @@ public class SchemaCreator {
 
         System.out.println("SolidDriver succesfully connected.");
         
-        String dQuery1 = "DROP TABLE HOLDER ";
-        String dQuery2 = "DROP TABLE ACCOUNT ";
+        String dQuery1 = "DROP TABLE ACCOUNT ";
+        String dQuery2 = "DROP TABLE HOLDER ";
         
         String cQuery1 = "CREATE TABLE Holder ("
-			    		+ "HolderPk int,"
+			    		+ " HolderPk int,"
 			    		+ " FirstName varchar(60),"
 			    		+ " LastName varchar(60),"
 			    		+ " PRIMARY KEY (HolderPk)"
@@ -35,7 +35,7 @@ public class SchemaCreator {
         
         String cQuery2 = "CREATE TABLE Account ("
         				+ " AccountPk int,"
-        				+ " Balance int,"
+        				+ " Balance bigint,"
         				+ " HolderFk int,"
         				+ " PRIMARY KEY (AccountPk),"
         				+ " FOREIGN KEY (HolderFK) REFERENCES Holder(HolderPk)"

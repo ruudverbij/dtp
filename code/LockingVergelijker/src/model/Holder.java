@@ -34,5 +34,8 @@ public class Holder {
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
 	}
-
+	
+	public String getInsertStmt() {
+		return "INSERT INTO Holder VALUES ("+holderPk+", '"+firstName+"', '"+lastName+"');";
+	}
 }

@@ -2,13 +2,18 @@ package model;
 
 public class Account {
 	private int accountPk;
-	private double balance;
+	private Long balance;
 	private int holderFk;
 	
-	public Account(int accountPk, double balance, int holderFk){
+	public Account(int accountPk, Long balance, int holderFk){
 		this.setAccountPk(accountPk);
 		this.setBalance(balance);
 		this.setHolderFk(holderFk);
+	}
+	
+	public Account(int accountPk, Long balance){
+		this.setAccountPk(accountPk);
+		this.setBalance(balance);
 	}
 
 	public int getAccountPk() {
@@ -23,7 +28,7 @@ public class Account {
 		return balance;
 	}
 
-	public void setBalance(double balance) {
+	public void setBalance(Long balance) {
 		this.balance = balance;
 	}
 
@@ -35,4 +40,7 @@ public class Account {
 		this.holderFk = holderFk;
 	}
 
+	public String getInsertStmt() {
+		return "INSERT INTO Account VALUES ("+accountPk+", "+balance+", "+holderFk+");";
+	}
 }
