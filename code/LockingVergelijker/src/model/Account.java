@@ -40,7 +40,11 @@ public class Account {
 		this.holderFk = holderFk;
 	}
 
-	public String getInsertStmt() {
-		return "INSERT INTO Account VALUES ("+accountPk+", "+balance+", "+holderFk+");";
+	public static String getInsertStmtPrefix() {
+		return "INSERT INTO Account (AccountPk, Balance, HolderFk) VALUES ";
+	}
+	
+	public String getInsertStmtInner(){
+		return "("+accountPk+", "+balance+", "+holderFk+")";
 	}
 }

@@ -1,5 +1,6 @@
 package setup;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
@@ -14,8 +15,7 @@ public class RandomFiller {
 	private static final int BASIC_BALANCE			 = 100000;
 	private static final int NUM_HOLDERS 		  	 = 10000;
 	private static final int NUM_ACCOUNTS 		  	 = 13000;
-	private static final double BALANCE_PARETO_ALPHA = 3.0;
-	private static final double HOLDER_PARETO_ALPHA  = 3.0;
+	private static final double BALANCE_PARETO_ALPHA = 2.0;
 	
 	// DATA FOR DATABASE
 	private static Holder[] holders = new Holder[NUM_HOLDERS];
@@ -23,27 +23,37 @@ public class RandomFiller {
 	
 	public static void main (String args[]) throws Exception
     {
+		System.out.println("Generating random data");
 		// Create data
 		generateRandom();
-
+		
+		System.out.println("Setting up database connection");
 		// Set up DB connection
         Properties props;
         java.sql.Connection conn;
-        java.sql.Statement stmt;  
         java.sql.Driver d = (java.sql.Driver)Class.forName("solid.jdbc.SolidDriver").newInstance();
         String sCon = "jdbc:solid://localhost:1964/dba/dba";
         props = new Properties();
         props.put("StatementCache","32");
         conn = java.sql.DriverManager.getConnection(sCon, props);
-        stmt= conn.createStatement();
+        // Execute all in one transaction
+        conn.setAutoCommit(false);
         
-        // insert Holders & Accounts into DB
-        insertHolders(stmt);
-        insertAccounts(stmt);
+        // Recreate schema
+        SchemaCreator.createSchema();
         
-        // Close statement & connection
-        stmt.close();
-        conn.close();		
+        // Insert Holders & Accounts into DB
+        System.out.println("Busy inserting Holders");
+        insertHolders(conn);
+        conn.commit();
+        System.out.println("Busy inserting Accounts");
+        insertAccounts(conn);
+        conn.commit();
+        
+        // Close connection
+        conn.close();
+        
+        System.out.println("Finished");
     }
 	
 	private static void generateRandom(){
@@ -71,30 +81,45 @@ public class RandomFiller {
 		
 		// GENERATE ACCOUNT INSTANCES
 		for(int i=0;i<NUM_ACCOUNTS;i++){
-			int holderId = (int) Math.round((StdRandom.pareto(HOLDER_PARETO_ALPHA)*NUM_HOLDERS));
+			int holderId = (int)(Math.random()*(NUM_HOLDERS-1));
 			accounts[i] = new Account(i, balance[i], holderId);
 		}
 	}
 	
-	private static void insertHolders(Statement stmt){
-		for(int i=0;i<NUM_HOLDERS;i++){
-			try{
-				stmt.executeQuery(holders[i].getInsertStmt());
-			}catch(SQLException e){
-				System.err.println("ERROR WHILE INSERTING: "+e.getMessage());
-				System.err.println("Cannot insert: "+holders[i].getInsertStmt());
-			}
+	private static void insertHolders(Connection conn){
+		// Build query String
+		String queryString = Holder.getInsertStmtPrefix();
+		queryString += holders[0].getInsertStmtInner();
+		for(int i=1;i<NUM_HOLDERS;i++){
+			queryString += ", " + holders[i].getInsertStmtInner();
+		}
+		
+		// Execute query
+		try{
+			Statement stmt = conn.createStatement();
+			stmt.executeUpdate(queryString);
+			stmt.close();
+		} catch(SQLException e){
+			System.err.println("ERROR IN STATEMENT: "+e.getMessage());
+			System.err.println("query: "+ queryString);
 		}
 	}
 	
-	private static void insertAccounts(Statement stmt){
-		for(int i=0;i<NUM_ACCOUNTS;i++){
-			try{
-				stmt.executeQuery(accounts[i].getInsertStmt());
-			}catch(SQLException e){
-				System.err.println("ERROR WHILE INSERTING: "+e.getMessage());
-				System.err.println("Cannot insert: "+holders[i].getInsertStmt());
-			}
+	private static void insertAccounts(Connection conn){
+		// Build query String
+		String queryString = Account.getInsertStmtPrefix();
+		queryString += accounts[0].getInsertStmtInner();
+		for(int i=1;i<NUM_ACCOUNTS;i++){
+			queryString += ", " + accounts[i].getInsertStmtInner();
+		}
+		
+		// Execute query
+		try{
+			Statement stmt = conn.createStatement();
+			stmt.executeUpdate(queryString);
+			stmt.close();
+		} catch(SQLException e){
+			System.err.println("ERROR IN STATEMENT: "+e.getMessage());
 		}
 	}
 }

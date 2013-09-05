@@ -6,21 +6,26 @@ import java.util.Properties;
 public class SchemaCreator {
     public static void main (String args[]) throws Exception
     {
+    	createSchema();
+    }
+    
+    protected static void createSchema() throws Exception{
         Properties props;
         java.sql.Connection conn;
         java.sql.Statement stmt;
             
-        // this is the recommended way for registering Drivers
+        // Register driver
         java.sql.Driver d = (java.sql.Driver)Class.forName("solid.jdbc.SolidDriver").newInstance();
         String sCon = "jdbc:solid://localhost:1964/dba/dba";
 
         props = new Properties();
         props.put("StatementCache","32");
 
-        // next, the connection is attempted
+        // Set up connection
         System.out.println("Attempting to connect :" + sCon);
         conn = java.sql.DriverManager.getConnection(sCon, props);
-
+        conn.setAutoCommit(true);
+        
         System.out.println("SolidDriver succesfully connected.");
         
         String dQuery1 = "DROP TABLE ACCOUNT ";
@@ -55,9 +60,11 @@ public class SchemaCreator {
         }catch(SQLException e){
         	System.err.println(e.getMessage());
         }
-        // and we close
+                
+        // Close
         stmt.close();
         conn.close();        
+
     }
 
 }

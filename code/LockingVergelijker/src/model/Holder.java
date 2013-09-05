@@ -35,7 +35,11 @@ public class Holder {
 		this.lastName = lastName;
 	}
 	
-	public String getInsertStmt() {
-		return "INSERT INTO Holder VALUES ("+holderPk+", '"+firstName+"', '"+lastName+"');";
+	public static String getInsertStmtPrefix() {
+		return "INSERT INTO Holder (HolderPk, FirstName, LastName) VALUES ";
+	}
+	
+	public String getInsertStmtInner(){
+		return "("+holderPk+", '"+firstName+"', '"+lastName+"')";
 	}
 }
