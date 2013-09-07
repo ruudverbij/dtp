@@ -36,15 +36,14 @@ public class SchemaCreator {
 			    		+ " FirstName varchar(60),"
 			    		+ " LastName varchar(60),"
 			    		+ " PRIMARY KEY (HolderPk)"
-			    		+ ") ";
+			    		+ ") STORE disk";
         
         String cQuery2 = "CREATE TABLE Account ("
         				+ " AccountPk int,"
         				+ " Balance bigint,"
         				+ " HolderFk int,"
-        				+ " PRIMARY KEY (AccountPk),"
-        				+ " FOREIGN KEY (HolderFK) REFERENCES Holder(HolderPk)"
-        				+ ")";
+        				+ " PRIMARY KEY (AccountPk)"
+        				+ ") STORE disk";
 
         stmt= conn.createStatement();
         

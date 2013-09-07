@@ -12,7 +12,7 @@ import model.Holder;
 
 public class RandomFiller {
 	// PARAMETER SECTION
-	private static final int BASIC_BALANCE			 = 100000;
+	public static final int BASIC_BALANCE			 = 100000;
 	private static final int NUM_HOLDERS 		  	 = 10000;
 	private static final int NUM_ACCOUNTS 		  	 = 13000;
 	private static final double BALANCE_PARETO_ALPHA = 2.0;
@@ -48,6 +48,9 @@ public class RandomFiller {
         conn.commit();
         System.out.println("Busy inserting Accounts");
         insertAccounts(conn);
+        conn.commit();
+        System.out.println("Setting tables to optimistic");
+        setOptimistic(conn);
         conn.commit();
         
         // Close connection
@@ -102,6 +105,21 @@ public class RandomFiller {
 		} catch(SQLException e){
 			System.err.println("ERROR IN STATEMENT: "+e.getMessage());
 			System.err.println("query: "+ queryString);
+		}
+	}
+	
+	private static void setOptimistic(Connection conn){
+		String queryString1 = "alter table account set optimistic";
+		String queryString2 = "alter table holder set optimistic";
+		try{
+			Statement stmt1 = conn.createStatement();
+			stmt1.executeUpdate(queryString1);
+			stmt1.close();
+			Statement stmt2 = conn.createStatement();
+			stmt2.executeUpdate(queryString2);
+			stmt2.close();
+		} catch(SQLException e){
+			System.err.println("ERROR IN STATEMENT: "+e.getMessage());
 		}
 	}
 	
