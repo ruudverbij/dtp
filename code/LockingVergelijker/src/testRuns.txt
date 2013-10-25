@@ -1,0 +1,11 @@
+Test 1-10:
+20 banks, 20 transactions
+
+Test 11-20
+25 banks, 20 transactions
+
+Test 21-30
+20 banks, 25 transactions
+
+Test 31-40
+25 banks, 25 transactions

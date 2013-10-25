@@ -1,0 +1,10 @@
+java banks.ThreadScheduler 25 20 false false > testRuns\11.txt
+java banks.ThreadScheduler 25 20 false false > testRuns\12.txt
+java banks.ThreadScheduler 25 20 false false > testRuns\13.txt
+java banks.ThreadScheduler 25 20 false false > testRuns\14.txt
+java banks.ThreadScheduler 25 20 false false > testRuns\15.txt
+java banks.ThreadScheduler 25 20 false false > testRuns\16.txt
+java banks.ThreadScheduler 25 20 false false > testRuns\17.txt
+java banks.ThreadScheduler 25 20 false false > testRuns\18.txt
+java banks.ThreadScheduler 25 20 false false > testRuns\19.txt
+java banks.ThreadScheduler 25 20 false false > testRuns\20.txt

@@ -107,6 +107,9 @@ public class Bank extends Thread {
 		long timeElapsed = System.nanoTime() - startTime;
 		
 		// print results
-		System.out.println("Bank "+bankNumber+" finished with "+numberOfExceptions+" revokes in "+timeElapsed+" nanoseconds.");
+		if(printDebug)
+			System.out.println("Bank "+bankNumber+" finished with "+numberOfExceptions+" revokes in "+timeElapsed+" nanoseconds.");
+		else
+			System.out.println(numberOfExceptions+","+timeElapsed);
 	}
 }
