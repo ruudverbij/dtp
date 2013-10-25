@@ -1,5 +1,7 @@
 package banks;
 
+import setup.RandomFiller;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -21,7 +23,12 @@ public class ThreadScheduler {
 	private int numberOfBanks;
 	private int numberOfTransactionsPerBank;
 	
+	// args[0] = #banks
+	// args[1] = #transactions per bank
+	// args[2] = true V false: run randomfiller.
 	public static void main (String args[]) throws Exception {
+		if(Boolean.valueOf(args[2]))
+			new RandomFiller();
     	new ThreadScheduler(Integer.parseInt(args[0]),Integer.parseInt(args[1]));
     }
 	

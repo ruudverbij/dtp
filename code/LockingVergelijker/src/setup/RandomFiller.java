@@ -21,8 +21,11 @@ public class RandomFiller {
 	private static Holder[] holders = new Holder[NUM_HOLDERS];
 	private static Account[] accounts = new Account[NUM_ACCOUNTS];
 	
-	public static void main (String args[]) throws Exception
-    {
+	public static void main (String args[]) throws Exception {
+		new RandomFiller();
+    }
+	
+	public RandomFiller() throws Exception {
 		System.out.println("Generating random data");
 		// Create data
 		generateRandom();
@@ -56,8 +59,8 @@ public class RandomFiller {
         // Close connection
         conn.close();
         
-        System.out.println("Finished");
-    }
+        System.out.println("Finished");	
+	}
 	
 	private static void generateRandom(){
 		// GENERATE NAMES OF HOLDERS
