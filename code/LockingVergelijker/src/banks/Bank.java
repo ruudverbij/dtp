@@ -12,6 +12,7 @@ import model.Account;
 import model.Holder;
 import model.Transaction;
 
+
 public class Bank extends Thread {
         
 	// Connection
@@ -21,8 +22,9 @@ public class Bank extends Thread {
     private Statement stmt;
 	private int numberOfExceptions;
 	private int bankNumber;
+	private boolean printDebug = false;
 	
-	public Bank(ArrayList<Transaction> transactions, int bankNumber) throws Exception {
+	public Bank(ArrayList<Transaction> transactions, int bankNumber, boolean printDebug) throws Exception {
 		// setup connection
         Properties props;
         java.sql.Driver d = (java.sql.Driver)Class.forName("solid.jdbc.SolidDriver").newInstance();
@@ -34,6 +36,7 @@ public class Bank extends Thread {
         conn.setAutoCommit(false);	
 
 		// set the bank-specific items
+		this.printDebug = printDebug;
 		this.transactions = transactions;
 		this.bankNumber = bankNumber;
 		numberOfExceptions = 0;
@@ -85,7 +88,8 @@ public class Bank extends Thread {
 	}
 	
 	public void run() {
-		System.out.println("Bank "+bankNumber+" started with "+transactions.size()+" transactions");
+		if(printDebug)
+			System.out.println("Bank "+bankNumber+" started with "+transactions.size()+" transactions");
 		// start time measurement
 		long startTime = System.nanoTime();
 		

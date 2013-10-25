@@ -21,16 +21,19 @@ public class RandomFiller {
 	private static Holder[] holders = new Holder[NUM_HOLDERS];
 	private static Account[] accounts = new Account[NUM_ACCOUNTS];
 	
+	// args[0] = true V false: print debug info
 	public static void main (String args[]) throws Exception {
-		new RandomFiller();
+		new RandomFiller(Boolean.valueOf(args[0]));
     }
 	
-	public RandomFiller() throws Exception {
-		System.out.println("Generating random data");
+	public RandomFiller(boolean printDebug) throws Exception {
+		if(printDebug)
+			System.out.println("Generating random data");
 		// Create data
 		generateRandom();
 		
-		System.out.println("Setting up database connection");
+		if(printDebug)
+			System.out.println("Setting up database connection");
 		// Set up DB connection
         Properties props;
         java.sql.Connection conn;
@@ -43,23 +46,27 @@ public class RandomFiller {
         conn.setAutoCommit(false);
         
         // Recreate schema
-        SchemaCreator.createSchema();
+        SchemaCreator.createSchema(printDebug);
         
         // Insert Holders & Accounts into DB
-        System.out.println("Busy inserting Holders");
+        if(printDebug)
+			System.out.println("Busy inserting Holders");
         insertHolders(conn);
         conn.commit();
-        System.out.println("Busy inserting Accounts");
+        if(printDebug)
+			System.out.println("Busy inserting Accounts");
         insertAccounts(conn);
         conn.commit();
-        System.out.println("Setting tables to optimistic");
+        if(printDebug)
+			System.out.println("Setting tables to optimistic");
         setOptimistic(conn);
         conn.commit();
         
         // Close connection
         conn.close();
         
-        System.out.println("Finished");	
+        if(printDebug)
+			System.out.println("Finished");	
 	}
 	
 	private static void generateRandom(){

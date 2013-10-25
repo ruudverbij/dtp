@@ -6,10 +6,10 @@ import java.util.Properties;
 public class SchemaCreator {
     public static void main (String args[]) throws Exception
     {
-    	createSchema();
+    	createSchema(Boolean.valueOf(args[0]));
     }
     
-    protected static void createSchema() throws Exception{
+    protected static void createSchema(boolean printDebug) throws Exception{
         Properties props;
         java.sql.Connection conn;
         java.sql.Statement stmt;
@@ -22,11 +22,13 @@ public class SchemaCreator {
         props.put("StatementCache","32");
 
         // Set up connection
-        System.out.println("Attempting to connect :" + sCon);
+        if(printDebug)
+			System.out.println("Attempting to connect :" + sCon);
         conn = java.sql.DriverManager.getConnection(sCon, props);
         conn.setAutoCommit(true);
         
-        System.out.println("SolidDriver succesfully connected.");
+        if(printDebug)
+			System.out.println("SolidDriver succesfully connected.");
         
         String dQuery1 = "DROP TABLE ACCOUNT ";
         String dQuery2 = "DROP TABLE HOLDER ";

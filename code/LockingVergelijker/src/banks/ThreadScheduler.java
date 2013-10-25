@@ -22,34 +22,41 @@ public class ThreadScheduler {
 	private ArrayList<Account> accounts;
 	private int numberOfBanks;
 	private int numberOfTransactionsPerBank;
+	private boolean printDebug;
 	
 	// args[0] = #banks
 	// args[1] = #transactions per bank
 	// args[2] = true V false: run randomfiller.
+	// args[3] = true V false: output debug info
 	public static void main (String args[]) throws Exception {
 		if(Boolean.valueOf(args[2]))
-			new RandomFiller();
-    	new ThreadScheduler(Integer.parseInt(args[0]),Integer.parseInt(args[1]));
+			new RandomFiller(Boolean.valueOf(args[3]));
+    	new ThreadScheduler(Integer.parseInt(args[0]),Integer.parseInt(args[1]),Boolean.valueOf(args[3]));
     }
 	
-	public ThreadScheduler(int numberOfBanks, int numberOfTransactionsPerBank) throws Exception {
+	public ThreadScheduler(int numberOfBanks, int numberOfTransactionsPerBank, boolean printDebug) throws Exception {
 		this.numberOfBanks = numberOfBanks;
 		this.numberOfTransactionsPerBank = numberOfTransactionsPerBank;
+		this.printDebug = printDebug;
 		
 		// first, setup connection
-		System.out.println("Setup DB connection");
+		if(printDebug)
+			System.out.println("Setup DB connection");
 		setupConnection();
 		
 		// next, collect all accounts
-		System.out.println("Get all accounts");
+		if(printDebug)
+			System.out.println("Get all accounts");
 		getAllAccounts();
 		
 		// next, generate all transactions
-		System.out.println("Generate all transaction");
+		if(printDebug)
+			System.out.println("Generate all transaction");
 		generateTransactions();
 		
 		// finally, distribute all the transactions to the banks
-		System.out.println("Distribute transactions");
+		if(printDebug)
+			System.out.println("Distribute transactions");
 		distributeTransactions();
 	}
 	
@@ -114,10 +121,11 @@ public class ThreadScheduler {
 				ArrayList<Transaction> bankList = new ArrayList<Transaction>();
 				for(int j = i*numberOfTransactionsPerBank; j < (i+1)*numberOfTransactionsPerBank; j++)
 					bankList.add(transactions.get(j));
-				banks.add(new Bank(bankList,i));
+				banks.add(new Bank(bankList,i,printDebug));
 			}	
 		
-			System.out.println("Now going to run the banks");
+			if(printDebug)
+				System.out.println("Now going to run the banks");
 			for(int i = 0; i < banks.size(); i++)
 				banks.get(i).start();			
 		} catch(Exception ie){System.err.println("Exception: " + ie.getMessage());}
