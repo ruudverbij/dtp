@@ -23,21 +23,24 @@ public class ThreadScheduler {
 	private int numberOfBanks;
 	private int numberOfTransactionsPerBank;
 	private boolean printDebug;
+	private boolean optimistic;
 	
 	// args[0] = #banks
 	// args[1] = #transactions per bank
 	// args[2] = true V false: run randomfiller.
 	// args[3] = true V false: output debug info
+	// args[4] = true V false: optimistic?
 	public static void main (String args[]) throws Exception {
 		if(Boolean.valueOf(args[2]))
 			new RandomFiller(Boolean.valueOf(args[3]));
-    	new ThreadScheduler(Integer.parseInt(args[0]),Integer.parseInt(args[1]),Boolean.valueOf(args[3]));
+    	new ThreadScheduler(Integer.parseInt(args[0]),Integer.parseInt(args[1]),Boolean.valueOf(args[3]),Boolean.valueOf(args[4]));
     }
 	
-	public ThreadScheduler(int numberOfBanks, int numberOfTransactionsPerBank, boolean printDebug) throws Exception {
+	public ThreadScheduler(int numberOfBanks, int numberOfTransactionsPerBank, boolean printDebug, boolean optimistic) throws Exception {
 		this.numberOfBanks = numberOfBanks;
 		this.numberOfTransactionsPerBank = numberOfTransactionsPerBank;
 		this.printDebug = printDebug;
+		this.optimistic = optimistic;
 		
 		// first, setup connection
 		if(printDebug)
@@ -68,6 +71,21 @@ public class ThreadScheduler {
         props = new Properties();
         props.put("StatementCache","32");
         conn = java.sql.DriverManager.getConnection(sCon, props);
+		
+		String queryString1 = (optimistic) ? "alter table account set optimistic" : "alter table account set pessimistic";
+		String queryString2 = (optimistic) ? "alter table holder set optimistic" : "alter table holder set pessimistic";
+		
+		try{
+			Statement stmt1 = conn.createStatement();
+			stmt1.executeUpdate(queryString1);
+			stmt1.close();
+			Statement stmt2 = conn.createStatement();
+			stmt2.executeUpdate(queryString2);
+			stmt2.close();
+		} catch(SQLException e){
+			System.err.println("ERROR IN STATEMENT: "+e.getMessage());
+		}
+		
 	}
 	
 	private void getAllAccounts() throws Exception {

@@ -57,6 +57,10 @@ public class Bank extends Thread {
 				stmt.executeUpdate(sQuery1);
 				stmt.close();
 			} catch(SQLException ex) {
+				System.err.println("SQLException 3:"+ex.getMessage());
+				// would output:
+				// SQLException 3:[Solid JDBC 6.5.0.0 Build 0010] SOLID Database Error 10006: Concurrency conflict, two transactions updated or deleted the same row
+				
 				numberOfExceptions++;
 				// add transaction to revokedList
 				revokedList.add(transactions.get(i));
@@ -84,7 +88,11 @@ public class Bank extends Thread {
 		runTransactions(transactions);
 		try {
 			conn.commit();
-		} catch(Exception ie){System.err.println("SQLException: " + ie.getMessage());}
+		} catch(Exception ie){
+			// System.err.println("SQLException: " + ie.getMessage());
+			// would output:
+			// SQLException: [Solid JDBC 6.5.0.0 Build 0010] SOLID Database Error 10031: Transaction detected a deadlock, transaction is rolled back
+		}
 	}
 	
 	public void run() {
