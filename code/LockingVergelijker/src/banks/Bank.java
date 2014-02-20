@@ -1,19 +1,15 @@
 package banks;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Properties;
 import java.util.ArrayList;
+import java.util.Properties;
+import java.util.concurrent.Callable;
 
-import model.Account;
-import model.Holder;
 import model.Transaction;
 
 
-public class Bank extends Thread {
+public class Bank implements Callable<Long[]> {
         
 	// Connection
 	private java.sql.Connection conn;
@@ -95,7 +91,8 @@ public class Bank extends Thread {
 		}
 	}
 	
-	public void run() {
+	@Override
+	public Long[] call() throws Exception {
 		if(printDebug)
 			System.out.println("Bank "+bankNumber+" started with "+transactions.size()+" transactions");
 		// start time measurement
@@ -117,7 +114,8 @@ public class Bank extends Thread {
 		// print results
 		if(printDebug)
 			System.out.println("Bank "+bankNumber+" finished with "+numberOfExceptions+" revokes in "+timeElapsed+" nanoseconds.");
-		else
-			System.out.println(numberOfExceptions+","+timeElapsed);
+		
+		Long data[] = new Long[] {(long) numberOfExceptions, timeElapsed};
+		return data;
 	}
 }

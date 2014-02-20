@@ -1,18 +1,16 @@
 package banks;
 
-import setup.RandomFiller;
-
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Properties;
 import java.util.ArrayList;
+import java.util.Properties;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import model.Account;
-import model.Holder;
 import model.Transaction;
+import setup.RandomFiller;
 
 public class ThreadScheduler {
         
@@ -23,28 +21,25 @@ public class ThreadScheduler {
 	private int numberOfBanks;
 	private int numberOfTransactionsPerBank;
 	private boolean printDebug;
-	private boolean optimistic;
 	
 	// args[0] = #banks
 	// args[1] = #transactions per bank
 	// args[2] = true V false: run randomfiller.
 	// args[3] = true V false: output debug info
-	// args[4] = true V false: optimistic?
 	public static void main (String args[]) throws Exception {
 		if(Boolean.valueOf(args[2]))
 			new RandomFiller(Boolean.valueOf(args[3]));
-    	new ThreadScheduler(Integer.parseInt(args[0]),Integer.parseInt(args[1]),Boolean.valueOf(args[3]),Boolean.valueOf(args[4]));
+    	new ThreadScheduler(Integer.parseInt(args[0]),Integer.parseInt(args[1]),Boolean.valueOf(args[3]));
     }
 	
-	public ThreadScheduler(int numberOfBanks, int numberOfTransactionsPerBank, boolean printDebug, boolean optimistic) throws Exception {
+	public ThreadScheduler(int numberOfBanks, int numberOfTransactionsPerBank, boolean printDebug) throws Exception {
 		this.numberOfBanks = numberOfBanks;
 		this.numberOfTransactionsPerBank = numberOfTransactionsPerBank;
 		this.printDebug = printDebug;
-		this.optimistic = optimistic;
 		
-		// first, setup connection
+		// setup connection
 		if(printDebug)
-			System.out.println("Setup DB connection");
+			System.out.println("Setup connection");
 		setupConnection();
 		
 		// next, collect all accounts
@@ -60,20 +55,24 @@ public class ThreadScheduler {
 		// finally, distribute all the transactions to the banks
 		if(printDebug)
 			System.out.println("Distribute transactions");
-		distributeTransactions();
+		// run with pessimistic concurrency control
+		distributeAndRunTransactions("pessimistic");
+		// run with optimistic concurrency control
+		distributeAndRunTransactions("optimistic");
 	}
 	
 	private void setupConnection() throws Exception {
-		// setup connection
         Properties props;
         java.sql.Driver d = (java.sql.Driver)Class.forName("solid.jdbc.SolidDriver").newInstance();
         String sCon = "jdbc:solid://localhost:2315/dba/dba";
         props = new Properties();
         props.put("StatementCache","32");
         conn = java.sql.DriverManager.getConnection(sCon, props);
-		
-		String queryString1 = (optimistic) ? "alter table account set optimistic" : "alter table account set pessimistic";
-		String queryString2 = (optimistic) ? "alter table holder set optimistic" : "alter table holder set pessimistic";
+	}
+	
+	private void setPessimistic() throws Exception {
+        String queryString1 = "alter table account set pessimistic";
+		String queryString2 = "alter table holder set pessimistic";
 		
 		try{
 			Statement stmt1 = conn.createStatement();
@@ -85,7 +84,24 @@ public class ThreadScheduler {
 		} catch(SQLException e){
 			System.err.println("ERROR IN STATEMENT: "+e.getMessage());
 		}
+
+	}
+	
+	private void setOptimistic() throws Exception {
+        String queryString1 = "alter table account set optimistic";
+		String queryString2 = "alter table holder set optimistic";
 		
+		try{
+			Statement stmt1 = conn.createStatement();
+			stmt1.executeUpdate(queryString1);
+			stmt1.close();
+			Statement stmt2 = conn.createStatement();
+			stmt2.executeUpdate(queryString2);
+			stmt2.close();
+		} catch(SQLException e){
+			System.err.println("ERROR IN STATEMENT: "+e.getMessage());
+		}
+
 	}
 	
 	private void getAllAccounts() throws Exception {
@@ -131,9 +147,15 @@ public class ThreadScheduler {
 		}
 	}
 	
-	private void distributeTransactions() {
-	
+	private void distributeAndRunTransactions(String cc) throws Exception {
+		if(cc.equals("optimistic"))
+			setOptimistic();
+		else if(cc.equals("pessimistic"))
+			setPessimistic();
+		ExecutorService service = Executors.newCachedThreadPool();
 		ArrayList<Bank> banks = new ArrayList<Bank>();
+		ArrayList<Future<Long[]>> futures = new ArrayList<Future<Long[]>>();
+		
 		try {
 			for(int i = 0; i < numberOfBanks; i++) {
 				ArrayList<Transaction> bankList = new ArrayList<Transaction>();
@@ -144,8 +166,14 @@ public class ThreadScheduler {
 		
 			if(printDebug)
 				System.out.println("Now going to run the banks");
-			for(int i = 0; i < banks.size(); i++)
-				banks.get(i).start();			
+			for(int i = 0; i < banks.size(); i++){
+				Future<Long[]> task = service.submit(banks.get(i));
+				futures.add(task);
+			}
+			for(Future<Long[]> task:futures){
+				Long[] measurement = task.get();
+				System.out.println("" + numberOfBanks +","+ numberOfTransactionsPerBank +","+ cc +","+ measurement[0] +","+ measurement[1]);
+			}
 		} catch(Exception ie){System.err.println("Exception: " + ie.getMessage());}
 	}
 }
