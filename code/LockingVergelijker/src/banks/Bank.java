@@ -56,8 +56,12 @@ public class Bank implements Callable<Long[]> {
 				// System.err.println("SQLException 3:"+ex.getMessage());
 				// would output:
 				// SQLException 3:[Solid JDBC 6.5.0.0 Build 0010] SOLID Database Error 10006: Concurrency conflict, two transactions updated or deleted the same row
-				if(ex.getErrorCode() == 10006)
-				    numberOfExceptions++;
+				if(ex.getMessage().equals("[Solid JDBC 6.5.0.0 Build 0010] SOLID Database Error 10006: Concurrency conflict, two transactions updated or deleted the same row"))
+					numberOfExceptions++;
+				else if(ex.getMessage().equals("[Solid JDBC 6.5.0.0 Build 0010] SOLID Database Error 10031: Transaction detected a deadlock, transaction is rolled back"))
+					numberOfExceptions++;
+				else
+					System.out.println(ex.getMessage());
 				// add transaction to revokedList
 				revokedList.add(transactions.get(i));
 				revoked = true;
@@ -69,8 +73,12 @@ public class Bank implements Callable<Long[]> {
 					stmt.executeUpdate(sQuery2);
 					stmt.close();
 				} catch(SQLException ex) {
-                    if(ex.getErrorCode() == 10006)
-                        numberOfExceptions++;
+					if(ex.getMessage().equals("[Solid JDBC 6.5.0.0 Build 0010] SOLID Database Error 10006: Concurrency conflict, two transactions updated or deleted the same row"))
+						numberOfExceptions++;
+					else if(ex.getMessage().equals("[Solid JDBC 6.5.0.0 Build 0010] SOLID Database Error 10031: Transaction detected a deadlock, transaction is rolled back"))
+						numberOfExceptions++;
+					else
+						System.out.println(ex.getMessage());
 					// add transaction to revokedList
 					revokedList.add(transactions.get(i));
 					revoked = true;
