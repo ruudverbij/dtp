@@ -32,14 +32,14 @@
 % INTRODUCTION
 \section{Introduction}
 \label{sec:intro}
-This paper will show the impact of locking strategies on the performance of a database system. Databases allow for two types of locking strategies, namely optimistic and pessimistic. Each of these two strategies has advantages and disadvantages, depending on the number of conflicting updates that could occur. By introducing a metric which describes this level of conflicting updates in a set of transactions, one can easily define the type of transactions one has. This paper will present the break-even point for this metric, describing when to switch from a optimistic to a pessimistic locking strategy within the database. The results from this paper can be used when deciding upon the optimal strategy.
+This paper shows the impact of locking strategies on the performance of a database system. Databases allow for two types of locking strategies, namely optimistic and pessimistic. Each of these two strategies has advantages and disadvantages, depending on the number of conflicting updates that could occur. By introducing a metric which describes this level of conflicting updates in a set of transactions, one can easily define the type of transactions one has. This paper will present the break-even point for this metric, describing when to switch from a optimistic to a pessimistic locking strategy within the database. The results from this paper can be used when deciding upon the optimal strategy.
 
 This paper is structured as follows, first the case that was used for this paper will be described in Section~\ref{sec:case}, the methodology will be described in Section~\ref{sec:methodology}. The results presented in Section~\ref{sec:results}. Finally, this paper will end with a conclusion and discussion in Section~\ref{sec:conclusions}.
 
 % CASE
 \section{Case description}
 \label{sec:case}
-The show case for this paper will be a small database for a bank consisting of $10.000$ account holders for $13.000$ accounts. All these accounts exchange money with other accounts (of potentially other account holders). This show case models the number of transactions an account makes via the normal distribution: some accounts hardly ever send money to other accounts, while some accounts have a really frequent exchange of money, but most of the accounts will exchange money about average. The receiving end of the transactions is modeled similarly using the normal distribution. The link between sender and receiver is randomly distributed.
+The show case for this paper will be a small database for a bank consisting of $10.000$ account holders for $13.000$ accounts. Accounts carry out financial transactions mutual exchanges of money with other accounts (of potentially other account holders). This show case models the number of transactions an account makes via the normal distribution: some accounts hardly ever send money to other accounts, while some accounts have a really frequent exchange of money, but most of the accounts will exchange money about average. The receiving end of the transactions is modeled similarly using the normal distribution. The link between sender and receiver is randomly distributed.
 
 % METHODOLOGY
 \section{Methodology}
