@@ -53,7 +53,7 @@ public class Bank implements Callable<Long[]> {
 				stmt.executeUpdate(sQuery1);
 				stmt.close();
 			} catch(SQLException ex) {
-				System.err.println("SQLException 3:"+ex.getMessage());
+				// System.err.println("SQLException 3:"+ex.getMessage());
 				// would output:
 				// SQLException 3:[Solid JDBC 6.5.0.0 Build 0010] SOLID Database Error 10006: Concurrency conflict, two transactions updated or deleted the same row
 				

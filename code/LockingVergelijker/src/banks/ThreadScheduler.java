@@ -55,10 +55,18 @@ public class ThreadScheduler {
 		// finally, distribute all the transactions to the banks
 		if(printDebug)
 			System.out.println("Distribute transactions");
-		// run with pessimistic concurrency control
-		distributeAndRunTransactions("pessimistic");
 		// run with optimistic concurrency control
 		distributeAndRunTransactions("optimistic");
+		// run with pessimistic concurrency control
+		distributeAndRunTransactions("pessimistic");
+		
+		try {
+			conn.close();
+		} catch(Exception ie) {
+			System.err.println("SQLException: " + ie.getMessage());
+		}
+		
+		
 	}
 	
 	private void setupConnection() throws Exception {
@@ -69,7 +77,7 @@ public class ThreadScheduler {
         props.put("StatementCache","32");
         conn = java.sql.DriverManager.getConnection(sCon, props);
 	}
-	
+
 	private void setPessimistic() throws Exception {
         String queryString1 = "alter table account set pessimistic";
 		String queryString2 = "alter table holder set pessimistic";
@@ -82,7 +90,8 @@ public class ThreadScheduler {
 			stmt2.executeUpdate(queryString2);
 			stmt2.close();
 		} catch(SQLException e){
-			System.err.println("ERROR IN STATEMENT: "+e.getMessage());
+			System.err.println("ERROR IN STATEMENT(pes): "+e.getMessage());
+			e.printStackTrace();
 		}
 
 	}
@@ -99,11 +108,12 @@ public class ThreadScheduler {
 			stmt2.executeUpdate(queryString2);
 			stmt2.close();
 		} catch(SQLException e){
-			System.err.println("ERROR IN STATEMENT: "+e.getMessage());
+			System.err.println("ERROR IN STATEMENT(opt): "+e.getMessage());
+			e.printStackTrace();
 		}
 
 	}
-	
+
 	private void getAllAccounts() throws Exception {
 		String sQuery = "SELECT AccountPk, Balance, HolderFk FROM Account";
 		
@@ -125,11 +135,7 @@ public class ThreadScheduler {
         }
 		
 		stmt.close();
-		try {
-			conn.close();
-		} catch(Exception ie) {
-			System.err.println("SQLException: " + ie.getMessage());
-		}
+
 	}
 	
 	private void generateTransactions(){
