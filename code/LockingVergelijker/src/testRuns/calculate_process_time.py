@@ -20,7 +20,7 @@ for row in reader:
 		if not rowzero:
 			writer.writerow([banks, trans, locking, avgExc/banks, maxTime])
 		banks    = int(row[0])
-		bankIter = int(row[0])
+		bankIter = int(row[0])-1
 		trans    = int(row[1])
 		locking  = row[2]
 		maxTime  = 0
