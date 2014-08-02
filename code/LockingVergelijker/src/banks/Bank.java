@@ -84,20 +84,19 @@ public class Bank implements Callable<Long[]> {
 					revoked = true;
 				}	
 			}
+            if(!revoked){
+                try{
+                    conn.commit();
+                }catch (Exception e){
+                    System.err.println("DEZE EXCEPTIE ZOU NOOIT MOETEN GEBEUREN: "+e.getMessage());
+                }
+            }
 		}
 	}
 	
 	public void loopForRevoked(ArrayList<Transaction> transactions) {
-	
 		// run all transactions (and rerun revoked transactions)
 		runTransactions(transactions);
-		try {
-			conn.commit();
-		} catch(Exception ie){
-			// System.err.println("SQLException: " + ie.getMessage());
-			// would output:
-			// SQLException: [Solid JDBC 6.5.0.0 Build 0010] SOLID Database Error 10031: Transaction detected a deadlock, transaction is rolled back
-		}
 	}
 	
 	@Override
